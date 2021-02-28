@@ -7,11 +7,11 @@ static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char dmenufont[]       = "monospace:size=10";
-static const char col_gray1[]       = "#222222";
+static const char col_gray1[]       = "#2f343f";
 static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#005577";
+static const char col_gray3[]       = "#d3dae3";
+static const char col_gray4[]       = "#4877b1";
+static const char col_cyan[]        = "#2f343f";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
@@ -19,7 +19,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char *tags[] = { "", "", "", "", "", "", "7", "8", "9" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -27,8 +27,14 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	{ "Gimp",     NULL,       NULL,       1 << 8,            0,           -1 },
+	{ "LibreWolf",  NULL,       NULL,       1 << 0,       0,           -1 },
+	{ "St",   NULL,       "gamelauncher",  1 << 3,		0,-1},
+	{ "St",   NULL,       "mocp",  1 << 4,		0,-1},
+	{ "Stremio",      "stremio",    NULL,       	    1 << 5,     1,           -1},
+	{ "Chromium",        NULL,       NULL,       	    1 << 6,       0,           -1},
+	{ "zoom",        NULL,       NULL,       	    1 << 6,       0,           -1},
+	{ "discord",        NULL,       NULL,       	    1 << 2,       0,           -1},
 };
 
 /* layout(s) */
@@ -42,9 +48,8 @@ static const Layout layouts[] = {
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
 };
-
 /* key definitions */
-#define MODKEY Mod1Mask
+#define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -53,38 +58,38 @@ static const Layout layouts[] = {
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
-
+#define TERM "st"
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "st", NULL };
+static const char *termcmd[]  = { TERM, NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
+	{ MODKEY,                       XK_d,      spawn,          {.v = dmenucmd } },
+	{ MODKEY,						XK_Return, spawn,          {.v = termcmd } },
+	{ MODKEY|ShiftMask,             XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-	{ MODKEY,                       XK_Return, zoom,           {0} },
+	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
+	{ MODKEY,						XK_q,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY|ShiftMask,	            XK_f,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,			            XK_f,      fakefullscr,  {0} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
-	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } }, 
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
@@ -95,6 +100,36 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+
+	//MEDIA
+	
+	{ MODKEY,						XK_Up,	    spawn,			SHCMD("pulsemixer --change-volume +5") },
+    { MODKEY,						XK_Down,	spawn,			SHCMD("pulsemixer --change-volume -5") },
+    { MODKEY,						XK_z,		spawn,			SHCMD("pulsemixer --toggle-mute") },
+    { MODKEY|ShiftMask,				XK_Up,		spawn,			SHCMD("mocp -v +5") },
+    { MODKEY|ShiftMask,				XK_Down,	spawn,			SHCMD("mocp -v -5") },
+    { MODKEY,						XK_Right,	spawn,			SHCMD("mocp -f") },
+    { MODKEY,						XK_Left,	spawn,			SHCMD("mocp -r") },
+    { MODKEY,						XK_x,		spawn,			SHCMD("mocp -G") },
+	{ MODKEY,						XK_p,		spawn,          SHCMD(TERM " -e mocp")},
+	{ MODKEY,						XK_m,		spawn,          SHCMD("stremio")},
+
+	// APPS
+
+    {MODKEY, XK_e, spawn, SHCMD("pcmanfm")},
+	{MODKEY, XK_b, spawn, SHCMD("firefox")},
+	{MODKEY, XK_F4, spawn, SHCMD(TERM" -e pulsemixer")},
+    {MODKEY, XK_g, spawn, SHCMD(TERM " -e gamelauncher")},
+    {MODKEY | ShiftMask, XK_r, spawn, SHCMD(TERM " -e htop")},
+
+	// SCREENSHOT
+	
+   	{0, XK_Print, spawn, SHCMD("flameshot gui")},
+	{MODKEY, XK_Print, spawn, SHCMD("flameshot full -p ~/Pictures -c")},
+
+
+
+	{0,XK_Scroll_Lock, spawn, SHCMD("doas pm-suspend") },
 };
 
 /* button definitions */
