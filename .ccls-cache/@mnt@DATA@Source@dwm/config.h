@@ -28,7 +28,7 @@ static const Rule rules[] = {
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       1 << 8,            0,           -1 },
-	{ "LibreWolf",  NULL,       NULL,       1 << 0,       0,           -1 },
+	{ "firefox",  NULL,       NULL,       1 << 0,       0,           -1 },
 	{ "St",   NULL,       "gamelauncher",  1 << 3,		0,-1},
 	{ "St",   NULL,       "mocp",  1 << 4,		0,-1},
 	{ "Stremio",      "stremio",    NULL,       	    1 << 5,     1,           -1},
@@ -41,13 +41,14 @@ static const Rule rules[] = {
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
-
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[]=",      tile },    /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
+	{ "===",      bstackhoriz },	/* first entry is default */
 	{ "[M]",      monocle },
-};
+	{ "TTT",      bstack},	 
+	{ "[]=",      tile },
+	{ "><>",      NULL },    /* no layout function means floating behavior */
+	};
 /* key definitions */
 #define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
@@ -71,18 +72,21 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
+	{ MODKEY,                       XK_k,      incnmaster,     {.i = +1 } },
+	{ MODKEY,                       XK_j,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY,						XK_q,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY|ShiftMask,	            XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,			            XK_f,      fakefullscr,  {0} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_space,  setlayout,      {0} },
+	{ MODKEY,                       XK_space,  setlayout,      {.v = &layouts[0]} },
+	{ MODKEY|ShiftMask,             XK_m,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY|ControlMask,           XK_f,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY|ShiftMask,             XK_t,      setlayout,      {.v = &layouts[3]} },
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[4]} },
+	{ MODKEY,			            XK_f,      togglefullscr,  {0} },
+	{ MODKEY|ShiftMask,             XK_f,	   ftogglefullscr,  {0} },
+
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
@@ -117,6 +121,8 @@ static Key keys[] = {
 	// APPS
 
     {MODKEY, XK_e, spawn, SHCMD("pcmanfm")},
+    {MODKEY, XK_c, spawn, SHCMD("clipmenu")},
+    {MODKEY, XK_v, spawn, SHCMD("keepmenu")},
 	{MODKEY, XK_b, spawn, SHCMD("firefox")},
 	{MODKEY, XK_F4, spawn, SHCMD(TERM" -e pulsemixer")},
     {MODKEY, XK_g, spawn, SHCMD(TERM " -e gamelauncher")},
